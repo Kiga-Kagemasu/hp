@@ -1,21 +1,21 @@
 // --- ⚙️ 計算のメイン関数 ---
 // 変数名: 基礎HP(A), オーバーヒール(B), 魔道具1(C), 魔道具2(D), 魔力回路(E), その他(G)
 function calculateHP(A, B, C, D, E, G) {
+    // Aが0の場合、計算が破綻するため最低値を1とする (F/Aで割るため)
+    A = Math.max(A, 1); 
+    
     // B%, C%, D%, G% を「率」に変換
     const B_rate = B / 100;
     const C_rate = C / 100;
     const D_rate = D / 100;
     const G_rate = G / 100;
 
-    // Aが0の場合の割り算エラー防止
-    if (A < 1) A = 1; 
-
     // --- 計算式の実行（かけ算するたびに切り捨て Math.floor() を使用） ---
 
     // 1. 第一項: {A × (100% + B%)} ←切り捨て
     const term1 = Math.floor(A * (1 + B_rate)); 
 
-    // 2. 第二項: 魔道具1(C) の項
+    // 2. 第二項: 魔道具1(C) の項 (係数は(100%+B%)で固定)
     const temp_c1 = Math.floor(A * (1 + C_rate));
     const temp_c2 = temp_c1 - A;
     const term2 = Math.floor(temp_c2 * (1 + B_rate)); 
@@ -46,61 +46,59 @@ function calculateHP(A, B, C, D, E, G) {
 function calculateAndCompare() {
     const totalChars = 5;
     const allResults = [];
-    
-    // ② 共通のオーバーヒール(B)を取得
-    const B_common = parseFloat(document.getElementById('B_common').value) || 0;
-
-    // ⑤ 2箇所以上埋まっていれば比較するためのフラグ
     let validCharCount = 0;
 
     for (let i = 1; i <= totalChars; i++) {
-        const A = parseFloat(document.getElementById(`A${i}`).value) || 0; // ⑥ デフォルト空欄のため0として扱う
+        // 空欄の入力は 0 または '' になるため、|| 0 で数値に変換
+        const A = parseFloat(document.getElementById(`A${i}`).value) || 0;
+        const B = parseFloat(document.getElementById(`B${i}`).value) || 0;
         const C = parseFloat(document.getElementById(`C${i}`).value) || 0;
         const D = parseFloat(document.getElementById(`D${i}`).value) || 0;
-        const E = parseFloat(document.getElementById(`E${i}`).value) || 0; // ⑥ デフォルト空欄のため0として扱う
+        const E = parseFloat(document.getElementById(`E${i}`).value) || 0;
         const G = parseFloat(document.getElementById(`G${i}`).value) || 0;
 
-        // ⑤ 基礎HP(A)以外の入力が1つでもあれば有効とみなす (Aが空欄でもC, D, E, Gがあれば計算対象)
-        // 厳密には「2箇所以上」ではないが、何かしら入力があれば計算する仕様が一般的
-        const hasInputs = (A > 0) || (C > 0) || (D > 0) || (E > 0) || (G > 0);
+        // ⑤ A～Gの入力値のうち、2つ以上が 0 ではない場合に計算対象とする
+        // (A, B, C, D, E, G).filter(v => v > 0) の length が 2以上
+        const inputValues = [A, B, C, D, E, G];
+        const significantInputs = inputValues.filter(v => v > 0).length;
         
-        if (hasInputs) {
+        if (significantInputs >= 2) {
             validCharCount++;
-            // 計算実行（Bは共通値を使用）
-            const { F, ratio } = calculateHP(A, B_common, C, D, E, G);
+            
+            const { F, ratio } = calculateHP(A, B, C, D, E, G);
 
             allResults.push({
                 name: `キャラクター ${i}`,
                 A: A,
                 F: F,
                 ratio: ratio,
-                rawInputs: { C, D, E, G } // 猶予計算のためにC, D, E, Gを保存
+                rawInputs: { A, B, C, D, E, G } // 猶予計算のために全入力を保存
             });
         }
     }
 
     // 比較に必要なデータがない場合は終了
     if (validCharCount < 2) {
-        document.getElementById('results-container').innerHTML = '<p class="gap-info">計算には最低2体分のキャラクターデータが必要です。</p>';
+        document.getElementById('results-container').innerHTML = '<p class="gap-info">計算と比較を行うには、最低2体のキャラクターで2箇所以上のパラメーターを入力してください。</p>';
         return;
     }
     
-    // 順位付け (現在HP, HP割合)
+    // 順位付け (現在HP Fが大きい順、HP割合 F/Aが小さい順)
+    const hpRanked = [...allResults].sort((a, b) => b.F - a.F);
     const ratioRanked = [...allResults].sort((a, b) => a.ratio - b.ratio);
-    const hpRanked = [...allResults].sort((a, b) => b.F - a.F); // Fが大きい順（高い順）
 
     let htmlContent = '';
 
     // ③ 現在HPのランキング
-    htmlContent += '<h3>🏆 順位 (現在HP F のみ)</h3>';
+    htmlContent += '<h3>🏆 順位 (現在HP F のみ - 高い順)</h3>';
     htmlContent += generateRankTable(hpRanked, 'F');
     
     // ③ HP割合のランキング (F/A)
-    htmlContent += '<h3>🏆 順位 (HP割合 F/A のみ)</h3>';
+    htmlContent += '<h3>🏆 順位 (HP割合 F/A のみ - 低い順)</h3>';
     htmlContent += generateRankTable(ratioRanked, 'ratio');
     
-    // 猶予の計算と表示
-    htmlContent += calculateAndDisplayGap(ratioRanked, B_common);
+    // ④ 猶予の計算と表示
+    htmlContent += calculateAndDisplayGap(ratioRanked);
 
     // 結果をHTMLの所定の場所に出力
     document.getElementById('results-container').innerHTML = htmlContent;
@@ -112,7 +110,6 @@ function generateRankTable(data, sortKey) {
     
     data.forEach((char, index) => {
         const rank = index + 1;
-        const displayValue = sortKey === 'F' ? char.F.toLocaleString() : char.ratio.toFixed(4);
         const rankClass = sortKey === 'ratio' && rank === 1 ? 'rank-min' : '';
 
         table += `
@@ -130,7 +127,7 @@ function generateRankTable(data, sortKey) {
 }
 
 // ④ 猶予（基礎HPの増加量）を計算する関数
-function calculateAndDisplayGap(ratioRanked, B_common) {
+function calculateAndDisplayGap(ratioRanked) {
     const lowest = ratioRanked[0]; // 最下位 (F/Aが最も低い)
     const secondLowest = ratioRanked[1]; // 2番目に低いキャラ
     
@@ -138,25 +135,19 @@ function calculateAndDisplayGap(ratioRanked, B_common) {
 
     const targetRatio = secondLowest.ratio; // 2位のHP割合を目標とする
     
-    // 現在の最低キャラの基礎HP(A)をどれだけ増やせば2位と同じHP割合になるか？
+    // 最下位キャラの現在のパラメータを取得
+    const { B, C, D, E, G } = lowest.rawInputs;
     
-    // 目標値 (F/A = targetRatio) より F = A * targetRatio
-    // A'を目標の基礎HPとする
-    // F' = calculateHP(A', B, C, D, E, G).F
-    // F' / A' = targetRatio を満たす A' を探す。
-    
-    // 計算が複雑なので、目標とするHP割合に到達するAを二分探索で探す (専門用語でごめんなさい)
-    // 要は、Aの値を少しずつ変えて、F/AがtargetRatioになる点を探します。
-    
-    const { C, D, E, G } = lowest.rawInputs;
+    // 基礎HP(A)をどれだけ増やせば目標比率に到達するかを探索
     let minA = lowest.A;
-    let maxA = 50000; // 探索上限（十分大きい値）
+    let maxA = 1000000; // 探索上限 (100万)
     let targetA = lowest.A;
     
-    // 100回試行（十分正確な値が出る）
+    // 100回試行して高精度な値を探す (二分探索)
     for (let i = 0; i < 100; i++) {
         const midA = (minA + maxA) / 2;
-        const currentRatio = calculateHP(midA, B_common, C, D, E, G).ratio;
+        // 計算に使用するAは0にならないように調整 (calculateHP内で実施)
+        const currentRatio = calculateHP(midA, B, C, D, E, G).ratio; 
 
         if (currentRatio < targetRatio) {
             minA = midA;
@@ -189,12 +180,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // ① 入力フォームのラベルとデフォルト値
     const fields = [
-        { id: 'A', label: '基礎HP (A)', value: '' }, // ⑥ 基礎HPは空欄
-        { id: 'C', label: '魔道具1 (C) (%)', value: 5 }, // ⑥ 魔道具1は5%
-        { id: 'D', label: '魔道具2 (D) (%)', value: 5 }, // ⑥ 魔道具2は5%
-        { id: 'G', label: 'その他 (G) (%)', value: 0 }, // ⑦ その他(G)を追加
-        { id: 'E', label: '魔力回路 (E)', value: '' }, // ⑥ 魔力回路は空欄
+        { id: 'A', label: '基礎HP (A)', value: '' },       // ⑥ 空欄
+        { id: 'B', label: 'オーバーヒール (B) (%)', value: 20 }, // ⑥ 20
+        { id: 'C', label: '魔道具1 (C) (%)', value: 5 },  // ⑥ 5
+        { id: 'D', label: '魔道具2 (D) (%)', value: 5 },  // ⑥ 5
+        { id: 'G', label: 'その他 (G) (%)', value: 0 },   // ⑥ 0
+        { id: 'E', label: '魔力回路 (E)', value: '' },      // ⑥ 空欄
     ];
+    
+    // 入力フォームの表示順 (オーバーヒールはBですが、フォームではEの上に配置)
+    const displayOrder = ['A', 'C', 'D', 'B', 'E', 'G'];
+    const orderedFields = displayOrder.map(id => fields.find(f => f.id === id));
+
 
     for (let i = 1; i <= 5; i++) {
         const charDiv = document.createElement('div');
@@ -202,21 +199,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let cardContent = `<h3>キャラクター ${i}</h3>`;
         
-        fields.forEach(field => {
-            // AとEは空欄、C, Dは5、Gは0
-            let defaultValue = field.value;
-            if (field.value === '') {
-                defaultValue = '';
-            } else if (field.id === 'A' || field.id === 'E') {
-                 // AとEの初期値は空欄 (数値型なので空欄は非推奨だが、要望通りに)
-                 defaultValue = ''; 
-            } else {
-                defaultValue = field.value;
-            }
-
+        orderedFields.forEach(field => {
             cardContent += `
                 <label>${field.label}: 
-                    <input type="number" id="${field.id}${i}" value="${defaultValue}" min="0">
+                    <input type="number" id="${field.id}${i}" value="${field.value}" min="0">
                 </label>
             `;
         });
