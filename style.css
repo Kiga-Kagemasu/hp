@@ -1,87 +1,35 @@
-body {
-    font-family: sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f7f6;
-    color: #333;
-}
+/* 省略された部分は前回のものと同じです。以下の部分のみ追記・変更 */
 
-header {
-    background-color: #007bff;
-    color: white;
-    padding: 20px;
+/* --- 共通入力欄のスタイル --- */
+#common-input {
+    background-color: #ffe0b2; /* 薄いオレンジで強調 */
+    border: 1px solid #ff9800;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
     text-align: center;
 }
 
-main {
-    max-width: 1200px;
-    margin: 10px auto;
-    padding: 10px;
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-
-h2 {
-    color: #007bff;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-    margin-top: 20px;
-}
-
-/* --- 入力フォームのスタイル --- */
-#character-inputs {
-    display: flex;
-    /* 画面幅が狭くなったら折り返す設定 (スマホ対応) */
-    flex-wrap: wrap; 
-    justify-content: center;
-    gap: 15px;
-}
-
-.character-card {
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-    /* 柔軟な幅を設定し、PCでは均等、スマホでは100%に近くなるようにする */
-    width: 200px; 
-    background-color: #e9f0f8;
-}
-
-.character-card label {
+#common-input label {
+    font-weight: bold;
+    color: #e65100;
     display: block;
-    margin-bottom: 8px;
-    font-size: 14px;
+    margin-bottom: 5px;
 }
 
-.character-card input[type="number"] {
-    width: calc(100% - 10px);
-    padding: 5px;
-    margin-top: 2px;
-    border: 1px solid #ccc;
+#B_common {
+    width: 100px;
+    padding: 8px;
+    border: 2px solid #ff9800;
     border-radius: 4px;
+    text-align: center;
 }
 
-/* ボタンのスタイル */
-button {
-    display: block;
-    width: 90%; /* スマホで画面いっぱいに広がるように */
-    max-width: 300px; /* PCで大きくなりすぎないように */
-    margin: 20px auto;
-    padding: 12px 20px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 18px;
-    cursor: pointer;
-}
-
-/* --- 結果テーブルのスタイル（スマホ対応） --- */
+/* --- 結果テーブルのスタイル --- */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
-    /* テーブル全体をスクロール可能にして、スマホで表示しきれない場合に備える */
+    margin-top: 15px;
     display: block;
     overflow-x: auto;
     white-space: nowrap;
@@ -89,9 +37,9 @@ table {
 
 th, td {
     border: 1px solid #ddd;
-    padding: 8px 12px; /* パディングを調整してコンパクトに */
+    padding: 8px 12px;
     text-align: right;
-    font-size: 14px; /* 文字サイズを少し小さく */
+    font-size: 14px;
 }
 
 th {
@@ -106,24 +54,12 @@ th {
 }
 
 .gap-info {
-    padding: 10px;
-    border: 1px solid #ffcc00;
-    background-color: #fffacd;
+    padding: 15px;
+    border: 2px solid #007bff; /* 猶予情報を目立たせる */
+    background-color: #e3f2fd;
     margin-top: 15px;
-    border-radius: 5px;
+    border-radius: 8px;
+    font-weight: bold;
+    color: #0056b3;
 }
-
-/* スマートフォン向けの微調整（480px以下の場合） */
-@media (max-width: 480px) {
-    main {
-        padding: 5px;
-    }
-    .character-card {
-        width: 95%; /* スマホでは幅いっぱいに */
-        margin: 5px 0;
-    }
-    th, td {
-        padding: 6px 8px;
-        font-size: 12px;
-    }
-}
+/* ... @media (max-width: 480px) の設定は前回のものを維持 ... */

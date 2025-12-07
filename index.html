@@ -12,7 +12,14 @@
     </header>
 
     <main>
-        <h2>キャラクターデータ</h2>
+        <h2>キャラクターデータ入力</h2>
+        
+        <div id="common-input">
+            <label>✅ 全キャラ共通：オーバーヒール(B) (%) : 
+                <input type="number" id="B_common" value="20" min="0">
+            </label>
+        </div>
+        
         <div id="character-inputs">
             </div>
 
@@ -20,12 +27,16 @@
 
         <hr>
 
-        <h2>結果</h2>
+        <h2>📊 計算結果と順位</h2>
         <div id="results-container">
             <p>ここに計算結果と、HP割合の最も低いキャラの情報が表示されます。</p>
         </div>
 
     </main>
+
+    <footer>
+        <p>※かけ算するたびに小数点以下を切り捨てて計算しています。</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>
