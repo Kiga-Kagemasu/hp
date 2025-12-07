@@ -29,17 +29,23 @@ h2, h3 {
     margin-top: 20px;
 }
 
-/* --- ⑤ 共通コントロールUIのスタイル --- */
+/* --- 共通コントロールUIのスタイル (⑥ UIの調整) --- */
 #common-control {
     background-color: #e3f2fd;
     border: 1px solid #90caf9;
     padding: 15px;
     margin-bottom: 25px;
     border-radius: 8px;
-    display: flex; /* Flexboxで配置 */
-    flex-direction: column; /* 縦に並べる */
-    gap: 10px;
+    display: flex; 
+    flex-wrap: wrap; /* 画面が狭くなったら折り返す */
+    justify-content: space-around; /* 均等なスペースで配置 */
+    gap: 15px;
     text-align: left;
+}
+
+#target-selection, #common-input {
+    min-width: 300px; /* ある程度の幅を確保 */
+    padding: 5px;
 }
 
 #target-selection label, #common-input label {
@@ -75,13 +81,15 @@ h2, h3 {
     padding: 15px;
     border-radius: 8px;
     width: 200px; 
-    background-color: #f8f8f8; /* 個別入力は少し薄い色に */
+    background-color: #f8f8f8;
 }
 
 .character-card label {
     display: block;
     margin-bottom: 8px;
     font-size: 14px;
+    font-weight: normal; /* パラメータを薄くしない */
+    color: #333; /* パラメータを薄くしない */
 }
 
 .character-card input[type="text"] { 
@@ -191,7 +199,10 @@ footer {
         font-size: 18px;
     }
     #common-control {
-        text-align: center;
-        gap: 15px;
+        flex-direction: column; /* スマホでは縦並び */
+        text-align: left;
+    }
+    #target-selection, #common-input {
+        min-width: 100%;
     }
 }

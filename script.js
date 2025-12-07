@@ -27,7 +27,7 @@ function calculateHP(A, B, C, D, E, G) {
 
     const F = term1 + term2 + term3 + term4 + term5;
 
-    // HP割合 (F/A) - 比較に使用 (④ 再修正)
+    // HP割合 (F/A) - 比較に使用
     const ratio = F / A;
 
     return { F, ratio, A };
@@ -45,19 +45,19 @@ function calculateAndCompare() {
     const B_common = getVal('B_common');
 
     for (let i = 1; i <= totalChars; i++) {
-        // Bは共通値を使用し、個別入力は無視する (ただし、猶予計算の際は個別のBを使う可能性があるため、入力値は取得しておく)
+        // 個別入力欄から値を取得
         const A = getVal(`A${i}`);
-        const B_individual = getVal(`B${i}`);
         const C = getVal(`C${i}`);
         const D = getVal(`D${i}`);
         const E = getVal(`E${i}`);
         const G = getVal(`G${i}`);
 
-        // 2箇所以上の入力があれば有効とみなす (Bは共通だが、カードの入力値としてカウント)
-        const inputValues = [A, B_individual, C, D, E, G];
+        // 2箇所以上の入力があれば有効とみなす (A, C, D, E, G, B_common)
+        // B_commonは常に有効とみなし、他のA, C, D, E, Gから1つ以上 > 0 の入力があれば計算対象とする
+        const inputValues = [A, C, D, E, G];
         const significantInputs = inputValues.filter(v => v > 0).length;
         
-        if (significantInputs >= 2) {
+        if (significantInputs >= 1) { // 共通Bと合わせて2つ以上のパラメータが入力されていると見なす
             validCharCount++;
             
             // 計算実行 (Bは共通値を使用)
@@ -75,21 +75,21 @@ function calculateAndCompare() {
     }
 
     if (validCharCount < 2) {
-        document.getElementById('results-container').innerHTML = '<p class="gap-info">計算と比較を行うには、最低2体のキャラクターで2箇所以上のパラメーターを入力してください。</p>';
+        document.getElementById('results-container').innerHTML = '<p class="gap-info">計算と比較を行うには、最低2体のキャラクターにパラメータ（A, C, D, E, G）を入力してください。</p>';
         return;
     }
     
-    // ⑤ 順位付け (現在HP F、HP割合 F/A、ともに低い順)
+    // 順位付け (現在HP F、HP割合 F/A、ともに低い順)
     const hpRanked = [...allResults].sort((a, b) => a.F - b.F);
     const ratioRanked = [...allResults].sort((a, b) => a.ratio - b.ratio);
 
     let htmlContent = '';
 
-    // ③ Fのランキング (低い順)
+    // Fのランキング (低い順)
     htmlContent += '<h3>🏆 順位 (現在HP F のみ - 低い順)</h3>';
     htmlContent += generateRankTable(hpRanked, 'F');
     
-    // ③ F/Aのランキング (低い順)
+    // F/Aのランキング (低い順)
     htmlContent += '<h3>🏆 順位 (HP割合 F/A のみ - 低い順)</h3>';
     htmlContent += generateRankTable(ratioRanked, 'ratio');
     
@@ -99,7 +99,7 @@ function calculateAndCompare() {
     document.getElementById('results-container').innerHTML = htmlContent;
 }
 
-// 順位テーブルを生成するヘルパー関数 (⑥ランキング対象項目のみ)
+// 順位テーブルを生成するヘルパー関数 (ランキング対象項目のみ)
 function generateRankTable(data, sortKey) {
     let table = '<table><tr><th>順位</th><th>キャラ名</th>';
     
@@ -112,7 +112,7 @@ function generateRankTable(data, sortKey) {
     
     data.forEach((char, index) => {
         const rank = index + 1;
-        // ① 割合計算は小数点以下10桁まで表示
+        // 割合計算は小数点以下10桁まで表示
         const displayValue = sortKey === 'F' ? char.F.toLocaleString() : char.ratio.toFixed(10); 
         
         // F/Aで1位（最下位）の行を強調
@@ -130,19 +130,18 @@ function generateRankTable(data, sortKey) {
     return table;
 }
 
-// 猶予計算のロジック
+// 猶予計算のロジック (制約付き)
 function findAIncrease(initialA, targetRatio, B, C, D, E, G, maxA) {
     let minA = initialA;
     let maxLimit = maxA;
     let finalA = initialA;
     
-    // 探索上限を超えるなら終了
     if (initialA >= maxLimit) return 0;
 
     // 100回試行して高精度な値を探す
     for (let i = 0; i < 100; i++) {
         const midA = (minA + maxLimit) / 2;
-        if (midA > maxA) { // 常に制約上限を守る
+        if (midA > maxA) {
              maxLimit = midA;
              continue;
         }
@@ -182,7 +181,7 @@ function generateAdjustmentProposal(ratioRanked, targetId, allResults, B_common)
         const secondLowest = ratioRanked[1];
         if (!secondLowest) return htmlContent + '<p class="gap-info">他の比較対象がいません。</p>';
         
-        // ② 増加上限: 2位キャラの基礎HPまで (A_second - A_target)
+        // 増加上限: 2位キャラの基礎HPまで (A_second - A_target)
         const maxAIncrease = Math.max(0, secondLowest.A - target.A);
         const targetRatio = secondLowest.ratio;
         const { B, C, D, E, G } = currentLowest.rawInputs;
@@ -198,6 +197,7 @@ function generateAdjustmentProposal(ratioRanked, targetId, allResults, B_common)
         } else if (requiredIncrease === 0) {
             htmlContent += `<p class="gap-info">✅ ${target.name} はすでに2位 (${secondLowest.name}) と同等以上のHP効率です (差異: ${(secondLowest.ratio - target.ratio).toFixed(10)})。</p>`;
         } else {
+             // 増加量が上限を超えているか、計算しても追いつけない場合
             htmlContent += `<p class="gap-info">現在の ${target.name} の基礎HP (${target.A.toLocaleString()}) では、2位 (${secondLowest.name}, A=${secondLowest.A.toLocaleString()}) の基礎HPまで上げても、最下位を維持できません。</p>`;
         }
     
@@ -212,17 +212,16 @@ function generateAdjustmentProposal(ratioRanked, targetId, allResults, B_common)
         htmlContent += '<h4>1. 他のキャラの基礎HPを上げる調整案 (最優先)</h4>';
         
         nonTargets.forEach(otherChar => {
-            const { B, C, D, E, G } = otherChar.rawInputs;
-            const currentRatio = otherChar.ratio;
+            const { A, B, C, D, E, G } = otherChar.rawInputs;
             const targetRatio = target.ratio - 0.0000000001; // ターゲットが最下位になるようにわずかに下げる
             
             // 増加上限: ターゲットキャラの基礎HPまで (A_target - A_other)
             const maxAIncrease = Math.max(0, target.A - otherChar.A);
             
-            const requiredIncrease = findAIncrease(otherChar.A, targetRatio, B, C, D, E, G, otherChar.A + maxAIncrease);
+            const requiredIncrease = findAIncrease(A, targetRatio, B, C, D, E, G, A + maxAIncrease);
 
             if (requiredIncrease > 0 && requiredIncrease <= maxAIncrease) {
-                 htmlContent += `<p class="adjustment-success">🎉 成功案! ${otherChar.name} の **基礎HP (A)** を **約 +${requiredIncrease.toLocaleString()}** (上限A=${otherChar.A.toLocaleString() + maxAIncrease}) 増加させると、${target.name} が最下位になります。</p>`;
+                 htmlContent += `<p class="adjustment-success">🎉 成功案! ${otherChar.name} の **基礎HP (A)** を **約 +${requiredIncrease.toLocaleString()}** (上限A=${otherChar.A.toLocaleString()} $\to$ ${target.A.toLocaleString()}) 増加させると、${target.name} が最下位になります。</p>`;
                  foundAdjustment = true;
             }
         });
@@ -231,9 +230,8 @@ function generateAdjustmentProposal(ratioRanked, targetId, allResults, B_common)
             htmlContent += '<p class="adjustment-fail">基礎HPの上昇のみでは、ターゲットを最下位にすることはできませんでした。</p>';
 
             // --- 調整案 2: 魔道具を外す調整とHP上昇の組み合わせ（次点） ---
-            htmlContent += '<h4>2. 他のキャラの魔道具を外す調整案</h4>';
-            let foundMagicToolAdjustment = false;
-
+            htmlContent += '<h4>2. 他のキャラの魔道具を外す調整案 (次点)</h4>';
+            
             nonTargets.forEach(otherChar => {
                 const { A, B, C, D, E, G } = otherChar.rawInputs;
                 const maxAIncrease = Math.max(0, target.A - otherChar.A);
@@ -241,12 +239,11 @@ function generateAdjustmentProposal(ratioRanked, targetId, allResults, B_common)
 
                 // Dを外す検証 (D > 0 の場合)
                 if (D > 0) {
-                    // Dを外した状態での基礎HP増加量を計算
                     const requiredIncrease = findAIncrease(A, targetRatio, B, C, 0, E, G, A + maxAIncrease);
                     if (requiredIncrease >= 0 && requiredIncrease <= maxAIncrease) {
-                        const increaseText = requiredIncrease > 0 ? ` AND 基礎HPを **+${requiredIncrease.toLocaleString()}** 上げる` : '';
+                        const increaseText = requiredIncrease > 0 ? ` $\mathbf{AND}$ 基礎HPを **+${requiredIncrease.toLocaleString()}** 上げる` : '';
                         htmlContent += `<p class="adjustment-success">🎉 成功案! ${otherChar.name} の **魔道具Dを外す**${increaseText} と、${target.name} が最下位になります。</p>`;
-                        foundMagicToolAdjustment = true;
+                        foundAdjustment = true;
                     }
                 }
 
@@ -255,15 +252,15 @@ function generateAdjustmentProposal(ratioRanked, targetId, allResults, B_common)
                      const d_val = D > 0 ? D : 0; 
                      const requiredIncrease = findAIncrease(A, targetRatio, B, 0, d_val, E, G, A + maxAIncrease);
                      if (requiredIncrease >= 0 && requiredIncrease <= maxAIncrease) {
-                         const increaseText = requiredIncrease > 0 ? ` AND 基礎HPを **+${requiredIncrease.toLocaleString()}** 上げる` : '';
+                         const increaseText = requiredIncrease > 0 ? ` $\mathbf{AND}$ 基礎HPを **+${requiredIncrease.toLocaleString()}** 上げる` : '';
                          htmlContent += `<p class="adjustment-success">🎉 成功案! ${otherChar.name} の **魔道具Cを外す**${increaseText} と、${target.name} が最下位になります。</p>`;
-                         foundMagicToolAdjustment = true;
+                         foundAdjustment = true;
                      }
                 }
             });
 
-            if (!foundMagicToolAdjustment) {
-                htmlContent += '<p class="adjustment-fail">魔道具を外す、または基礎HPを上げても、ターゲットを最下位にすることはできませんでした。</p>';
+            if (!foundMagicToolAdjustment && !foundAdjustment) {
+                htmlContent += '<p class="adjustment-fail">すべての方法を試しましたが、ターゲットを最下位にすることはできませんでした。他のキャラの魔道具を複数外すか、ターゲットのパラメータを上げる必要があります。</p>';
             }
         }
     }
@@ -279,15 +276,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // 入力フォームのラベルとデフォルト値
     const fields = [
         { id: 'A', label: '基礎HP (A)', value: '' },       // ⑥ 空欄
-        { id: 'B', label: 'オーバーヒール (B) (%)', value: '20' }, // ⑥ 20 (個別入力は無視されるが、UIのため)
+        // Bは共通入力のため、個別入力は定義しない
         { id: 'C', label: '魔道具1 (C) (%)', value: '5' },  // ⑥ 5
         { id: 'D', label: '魔道具2 (D) (%)', value: '5' },  // ⑥ 5
-        { id: 'G', label: 'その他 (G) (%)', value: '0' },   // ⑥ 0
+        { id: 'G', label: 'その他 (G) (%)', value: '' },   // ⑥ 空欄
         { id: 'E', label: '魔力回路 (E)', value: '' },      // ⑥ 空欄
     ];
     
-    // ① 入力フォームの表示順 (Bは共通入力を使用するため、個別入力欄は非表示にしても良いが、今回は表示順として定義)
-    const displayOrder = ['A', 'C', 'D', 'G', 'B', 'E'];
+    // 入力フォームの表示順
+    const displayOrder = ['A', 'C', 'D', 'G', 'E'];
     const orderedFields = displayOrder.map(id => fields.find(f => f.id === id));
 
 
@@ -298,11 +295,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let cardContent = `<h3>キャラクター ${i}</h3>`;
         
         orderedFields.forEach(field => {
-            // Bは共通入力があるため、個別のBは非推奨だが、もし将来個別入力に戻す場合に備えて薄く表示
-            const style = (field.id === 'B' || field.id === 'E' || field.id === 'A') ? 'font-style: italic; color: #777;' : ''; 
-            
+            // パラメータは薄くしない
             cardContent += `
-                <label style="${style}">${field.label}: 
+                <label>${field.label}: 
                     <input type="text" id="${field.id}${i}" value="${field.value}" min="0">
                 </label>
             `;

@@ -13,6 +13,11 @@
 
     <main>
         <div id="common-control">
+            <div id="common-input">
+                <label>✅ **全キャラ共通：オーバーヒール(B) (%) :** <input type="text" id="B_common" value="20" min="0" onchange="calculateAndCompare()">
+                </label>
+            </div>
+            
             <div id="target-selection">
                 <label>✅ **調整ターゲット:** <select id="target-char" onchange="calculateAndCompare()">
                         <option value="1">キャラクター 1</option>
@@ -22,10 +27,6 @@
                         <option value="5">キャラクター 5</option>
                     </select>
                     を最もHP効率が低いキャラに調整したい
-                </label>
-            </div>
-            <div id="common-input">
-                <label>✅ **全キャラ共通：オーバーヒール(B) (%) :** <input type="text" id="B_common" value="20" min="0">
                 </label>
             </div>
         </div>
