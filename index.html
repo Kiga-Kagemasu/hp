@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゲームHP計算＆比較ツール</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>HP計算＆最下位比較ツール</h1>
+    </header>
+
+    <main>
+        <h2>キャラクターデータ入力 (5体)</h2>
+        <div id="character-inputs">
+            <div class="character-card">
+                <h3>キャラクター 1</h3>
+                <label>A (基本HP): <input type="number" id="A1" value="1000" min="1"></label>
+                <label>B (%) (バフ率): <input type="number" id="B1" value="10" min="0"></label>
+                <label>C (%) (特性率): <input type="number" id="C1" value="20" min="0"></label>
+                <label>D (係数 0,1,2): <input type="number" id="D1" value="1" min="0" max="2"></label>
+                <label>E (補正値): <input type="number" id="E1" value="50" min="0"></label>
+            </div>
+            </div>
+
+        <button onclick="calculateAndCompare()">計算して比較する</button>
+
+        <hr>
+
+        <h2>計算結果と順位</h2>
+        <div id="results-container">
+            <p>ここに計算結果と、F÷Aの最も低いキャラの情報が表示されます。</p>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>※かけ算するたびに小数点以下を切り捨てて計算しています。</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
