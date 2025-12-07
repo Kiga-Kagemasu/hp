@@ -12,20 +12,25 @@
     </header>
 
     <main>
-        <h2>キャラクターデータ入力 (5体)</h2>
-        
-        <div id="target-selection">
-            <label>✅ **ターゲットキャラ選択:** <select id="target-char">
-                    <option value="1">キャラクター 1</option>
-                    <option value="2">キャラクター 2</option>
-                    <option value="3">キャラクター 3</option>
-                    <option value="4">キャラクター 4</option>
-                    <option value="5">キャラクター 5</option>
-                </select>
-                を最もHP効率が低いキャラに調整したい
-            </label>
+        <div id="common-control">
+            <div id="target-selection">
+                <label>✅ **調整ターゲット:** <select id="target-char" onchange="calculateAndCompare()">
+                        <option value="1">キャラクター 1</option>
+                        <option value="2">キャラクター 2</option>
+                        <option value="3">キャラクター 3</option>
+                        <option value="4">キャラクター 4</option>
+                        <option value="5">キャラクター 5</option>
+                    </select>
+                    を最もHP効率が低いキャラに調整したい
+                </label>
+            </div>
+            <div id="common-input">
+                <label>✅ **全キャラ共通：オーバーヒール(B) (%) :** <input type="text" id="B_common" value="20" min="0">
+                </label>
+            </div>
         </div>
         
+        <h2>キャラクターデータ入力 (5体)</h2>
         <div id="character-inputs">
             </div>
 

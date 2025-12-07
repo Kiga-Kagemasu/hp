@@ -29,26 +29,42 @@ h2, h3 {
     margin-top: 20px;
 }
 
-/* --- ターゲット選択のスタイル --- */
-#target-selection {
-    background-color: #fff9e6;
-    border: 1px solid #ffcc00;
-    padding: 10px;
-    margin-bottom: 20px;
+/* --- ⑤ 共通コントロールUIのスタイル --- */
+#common-control {
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
+    padding: 15px;
+    margin-bottom: 25px;
     border-radius: 8px;
+    display: flex; /* Flexboxで配置 */
+    flex-direction: column; /* 縦に並べる */
+    gap: 10px;
+    text-align: left;
+}
+
+#target-selection label, #common-input label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+#B_common {
+    width: 100px;
+    padding: 5px;
+    border: 1px solid #90caf9;
+    border-radius: 4px;
     text-align: center;
 }
 
 #target-char {
     padding: 5px;
     font-weight: bold;
-    border: 1px solid #ffcc00;
+    border: 1px solid #90caf9;
 }
 
 /* --- 入力フォームのスタイル --- */
 #character-inputs {
     display: flex;
-    /* 画面幅が狭くなったら折り返す設定 (スマホ対応) */
     flex-wrap: wrap; 
     justify-content: center;
     gap: 15px;
@@ -58,9 +74,8 @@ h2, h3 {
     border: 1px solid #ddd;
     padding: 15px;
     border-radius: 8px;
-    /* 柔軟な幅を設定し、PCでは均等、スマホでは100%に近くなるようにする */
     width: 200px; 
-    background-color: #e9f0f8;
+    background-color: #f8f8f8; /* 個別入力は少し薄い色に */
 }
 
 .character-card label {
@@ -69,7 +84,6 @@ h2, h3 {
     font-size: 14px;
 }
 
-/* ③ 全角半角・コンマ対応のためtype="number"を外し、ここではtype="text"を使用 */
 .character-card input[type="text"] { 
     width: calc(100% - 10px);
     padding: 5px;
@@ -81,8 +95,8 @@ h2, h3 {
 /* ボタンのスタイル */
 button {
     display: block;
-    width: 90%; /* スマホで画面いっぱいに広がるように */
-    max-width: 300px; /* PCで大きくなりすぎないように */
+    width: 90%; 
+    max-width: 300px;
     margin: 20px auto;
     padding: 12px 20px;
     background-color: #28a745;
@@ -98,7 +112,6 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 15px;
-    /* テーブル全体をスクロール可能にして、スマホで表示しきれない場合に備える */
     display: block;
     overflow-x: auto;
     white-space: nowrap;
@@ -167,7 +180,7 @@ footer {
         padding: 5px;
     }
     .character-card {
-        width: 95%; /* スマホでは幅いっぱいに */
+        width: 95%; 
         margin: 5px 0;
     }
     th, td {
@@ -176,5 +189,9 @@ footer {
     }
     h2, h3 {
         font-size: 18px;
+    }
+    #common-control {
+        text-align: center;
+        gap: 15px;
     }
 }
