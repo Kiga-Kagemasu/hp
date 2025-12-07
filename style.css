@@ -22,11 +22,27 @@ main {
     border-radius: 8px;
 }
 
-h2 {
+h2, h3 {
     color: #007bff;
     border-bottom: 2px solid #eee;
     padding-bottom: 10px;
     margin-top: 20px;
+}
+
+/* --- ターゲット選択のスタイル --- */
+#target-selection {
+    background-color: #fff9e6;
+    border: 1px solid #ffcc00;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+#target-char {
+    padding: 5px;
+    font-weight: bold;
+    border: 1px solid #ffcc00;
 }
 
 /* --- 入力フォームのスタイル --- */
@@ -53,7 +69,8 @@ h2 {
     font-size: 14px;
 }
 
-.character-card input[type="number"] {
+/* ③ 全角半角・コンマ対応のためtype="number"を外し、ここではtype="text"を使用 */
+.character-card input[type="text"] { 
     width: calc(100% - 10px);
     padding: 5px;
     margin-top: 2px;
@@ -64,8 +81,8 @@ h2 {
 /* ボタンのスタイル */
 button {
     display: block;
-    width: 90%; 
-    max-width: 300px;
+    width: 90%; /* スマホで画面いっぱいに広がるように */
+    max-width: 300px; /* PCで大きくなりすぎないように */
     margin: 20px auto;
     padding: 12px 20px;
     background-color: #28a745;
@@ -106,6 +123,7 @@ th {
     font-weight: bold;
 }
 
+/* --- 調整案の結果を強調 --- */
 .gap-info {
     padding: 15px;
     border: 2px solid #007bff; 
@@ -116,17 +134,47 @@ th {
     color: #0056b3;
 }
 
+.adjustment-success {
+    background-color: #e6ffe6;
+    color: #008000;
+    border: 1px solid #008000;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.adjustment-fail {
+    background-color: #f7f7f7;
+    color: #888;
+    border: 1px solid #ccc;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 4px;
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    font-size: 12px;
+    color: #777;
+    margin-top: 20px;
+}
+
 /* スマートフォン向けの微調整（480px以下の場合） */
 @media (max-width: 480px) {
     main {
         padding: 5px;
     }
     .character-card {
-        width: 95%; 
+        width: 95%; /* スマホでは幅いっぱいに */
         margin: 5px 0;
     }
     th, td {
         padding: 6px 8px;
         font-size: 12px;
+    }
+    h2, h3 {
+        font-size: 18px;
     }
 }

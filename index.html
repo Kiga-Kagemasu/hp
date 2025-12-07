@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>カゲマスHP計算ツールβ</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -13,6 +13,19 @@
 
     <main>
         <h2>キャラクターデータ入力 (5体)</h2>
+        
+        <div id="target-selection">
+            <label>✅ **ターゲットキャラ選択:** <select id="target-char">
+                    <option value="1">キャラクター 1</option>
+                    <option value="2">キャラクター 2</option>
+                    <option value="3">キャラクター 3</option>
+                    <option value="4">キャラクター 4</option>
+                    <option value="5">キャラクター 5</option>
+                </select>
+                を最もHP効率が低いキャラに調整したい
+            </label>
+        </div>
+        
         <div id="character-inputs">
             </div>
 
@@ -20,15 +33,15 @@
 
         <hr>
 
-        <h2>📊 計算結果と順位</h2>
+        <h2>📊 計算結果と調整案</h2>
         <div id="results-container">
-            <p>ここに計算結果と、HP割合の最も低いキャラの情報が表示されます。</p>
+            <p>入力後、「計算して比較する」ボタンを押してください。</p>
         </div>
 
     </main>
 
     <footer>
-        <p>※かけ算するたびに小数点以下を切り捨てて計算しています。</p>
+        <p>※すべての計算は、かけ算するたびに小数点以下を切り捨てています。</p>
     </footer>
 
     <script src="script.js"></script>
